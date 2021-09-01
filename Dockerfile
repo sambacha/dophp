@@ -11,3 +11,4 @@ RUN chmod -R 755 /app
 RUN composer require revitron/automad-revitron
 RUN composer require antstei/automath
 
+EXPOSE 80, 8080, 8000, 5000, 3000, 443

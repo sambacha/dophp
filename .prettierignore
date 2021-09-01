@@ -1,0 +1,8 @@
+.DS_Store
+*.svg
+*.min.js
+*.png
+*.jpeg
+*.html
+*.css
+*.scss
