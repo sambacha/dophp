@@ -1,37 +1,13 @@
-FROM php:8-fpm-alpine
+FROM automad/automad:latest 
 
-LABEL maintainer="Marc Anton Dahmen <https://marcdahmen.de>"
+RUN rm -rf pages
+RUN rm -rf shared 
 
-RUN apk update && \
-	apk add --no-cache nginx supervisor
+COPY pages/post.txt pages/post.txt
+COPY shared/data.txt shared/data.txt
 
-RUN mkdir /var/lib/nginx/tmp/client_body
-RUN chown -R www-data:www-data /var/lib/nginx
-RUN chmod -R 755 /var/lib/nginx
-
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
-	install-php-extensions zip curl gd
-
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer 
-
-RUN composer create-project --no-scripts automad/automad /app
 RUN chown -R www-data:www-data /app
 RUN chmod -R 755 /app
+RUN composer require revitron/automad-revitron
+RUN composer require antstei/automath
 
-COPY etc/php.ini /usr/local/etc/php/php.ini
-COPY etc/nginx.conf /etc/nginx/nginx.conf
-COPY etc/www.conf /etc/php/8.0/php-fpm.d/www.conf
-COPY etc/automad.conf /etc/nginx/sites-enabled/automad.conf
-COPY etc/supervisord.conf /etc/supervisord.conf
-
-COPY init.sh /init.sh
-RUN chmod +x /init.sh
-
-WORKDIR /app
-VOLUME /app
-
-EXPOSE 80
-
-CMD ["/init.sh"]
